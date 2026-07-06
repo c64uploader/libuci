@@ -1,0 +1,14 @@
+# Build artifacts
+*.o
+*.prg
+*.asm
+*.int
+*.lbl
+*.map
+
+# Build output directories
+build/
+tests/build/
+
+# IDE / macOS
+.DS_Store
