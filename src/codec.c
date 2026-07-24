@@ -108,40 +108,26 @@ char uci_c_d(char c) {
     return c;
 }
 
-/* Buffer conversions: NUL-terminated src
- * Note: Uses index-based iteration (src[i]) instead of pointer increments (*dst++)
- * to work around an oscar64 -O3 optimization bug:
- * https://github.com/drmortalwombat/oscar64/issues/340
- */
+/* Buffer conversions: NUL-terminated src */
 
 __noinline char *uci_s_a(char *dst, const char *src) {
     char *out = dst;
+    while (*src) {
+        unsigned char c = (unsigned char)*src++;
 #if defined(__CC65__)
-    uint16_t i = 0;
-    while (src[i]) {
-        unsigned char c = (unsigned char)src[i];
         if (c >= 0xC1 && c <= 0xDA)       c -= 0x80;
         else if (c >= 0x41 && c <= 0x5A)  c += 0x20;
-        dst[i] = (char)c;
-        i++;
-    }
-    dst[i] = '\0';
-#else
-    uint16_t i = 0;
-    while (src[i]) {
-        dst[i] = src[i];
-        i++;
-    }
-    dst[i] = '\0';
 #endif
+        *dst++ = (char)c;
+    }
+    *dst = '\0';
     return out;
 }
 
 __noinline char *uci_s_au(char *dst, const char *src) {
     char *out = dst;
-    uint16_t i = 0;
-    while (src[i]) {
-        unsigned char c = (unsigned char)src[i];
+    while (*src) {
+        unsigned char c = (unsigned char)*src++;
 #if defined(__CC65__)
         /* cc65: PETSCII uppercase (0xC1-0xDA) -> ASCII uppercase (0x41-0x5A).
          * PETSCII lowercase (0x41-0x5A) is already in ASCII uppercase range. */
@@ -151,36 +137,32 @@ __noinline char *uci_s_au(char *dst, const char *src) {
          * ASCII uppercase is already correct. */
         if (c >= UCI_LC_MIN && c <= UCI_LC_MAX) c -= 0x20;
 #endif
-        dst[i] = (char)c;
-        i++;
+        *dst++ = (char)c;
     }
-    dst[i] = '\0';
+    *dst = '\0';
     return out;
 }
 
 __noinline char *uci_s_p(char *dst, const char *src) {
     char *out = dst;
-    uint16_t i = 0;
-    while (src[i]) {
-        unsigned char c = (unsigned char)src[i];
+    while (*src) {
+        unsigned char c = (unsigned char)*src++;
 #if defined(__CC65__)
         if (c >= 0x41 && c <= 0x5A)       c += 0x80;
         else if (c >= 0x61 && c <= 0x7A)  c -= 0x20;
 #else
         /* oscar64: native is ASCII - straight copy */
 #endif
-        dst[i] = (char)c;
-        i++;
+        *dst++ = (char)c;
     }
-    dst[i] = '\0';
+    *dst = '\0';
     return out;
 }
 
 __noinline char *uci_s_s(char *dst, const char *src) {
     char *out = dst;
-    uint16_t i = 0;
-    while (src[i]) {
-        unsigned char c = (unsigned char)src[i];
+    while (*src) {
+        unsigned char c = (unsigned char)*src++;
 #if defined(__CC65__)
         if (c >= 0xC1 && c <= 0xDA)       c -= 0xA0;
         else if (c >= 0x41 && c <= 0x5A)  c -= 0x40;
@@ -188,18 +170,16 @@ __noinline char *uci_s_s(char *dst, const char *src) {
         if (c >= 0x41 && c <= 0x5A)       c -= 0x20;
         else if (c >= 0x61 && c <= 0x7A)  c -= 0x60;
 #endif
-        dst[i] = (char)c;
-        i++;
+        *dst++ = (char)c;
     }
-    dst[i] = '\0';
+    *dst = '\0';
     return out;
 }
 
 __noinline char *uci_s_su(char *dst, const char *src) {
     char *out = dst;
-    uint16_t i = 0;
-    while (src[i]) {
-        unsigned char c = (unsigned char)src[i];
+    while (*src) {
+        unsigned char c = (unsigned char)*src++;
 #if defined(__CC65__)
         if (c >= 0xC1 && c <= 0xDA)       c -= 0xC0;
         else if (c >= 0x41 && c <= 0x5A)  c -= 0x40;
@@ -207,18 +187,16 @@ __noinline char *uci_s_su(char *dst, const char *src) {
         if (c >= 0x41 && c <= 0x5A)       c -= 0x40;
         else if (c >= 0x61 && c <= 0x7A)  c -= 0x60;
 #endif
-        dst[i] = (char)c;
-        i++;
+        *dst++ = (char)c;
     }
-    dst[i] = '\0';
+    *dst = '\0';
     return out;
 }
 
 __noinline char *uci_s_d(char *dst, const char *src) {
     char *out = dst;
-    uint16_t i = 0;
-    while (src[i]) {
-        unsigned char c = (unsigned char)src[i];
+    while (*src) {
+        unsigned char c = (unsigned char)*src++;
 #if defined(__CC65__)
         /* cc65: device data is standard PETSCII - convert to alt PETSCII
          * for printf display in the Lowercase/Uppercase charset. */
@@ -233,10 +211,9 @@ __noinline char *uci_s_d(char *dst, const char *src) {
         else if (c >= 0xC1 && c <= 0xDA)  c -= 0x80;  /* alt upper -> ASCII upper */
         /* 0x41-0x5A: standard lower -> ASCII upper (same byte - unchanged) */
 #endif
-        dst[i] = (char)c;
-        i++;
+        *dst++ = (char)c;
     }
-    dst[i] = '\0';
+    *dst = '\0';
     return out;
 }
 
